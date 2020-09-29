@@ -1,0 +1,217 @@
+<!doctype html>
+<html>
+<head>
+   <meta charset="utf-8">
+   <title>BIM Navigation Demo</title>
+   <meta name="description" content="">
+   <meta name="viewport" content="width=device-width">
+   <link rel="stylesheet" href="css/styles.min.css">
+   <link rel="stylesheet" href="css/bimstyles.min.css">
+   <link rel="stylesheet" href="assets/css/bootstrap.min.css">
+   <style>
+   #navigatetoolbar {
+      position: absolute;
+      z-index: 9;
+      background-color: #f1f1f1;
+      border: 1px solid #d3d3d3;
+      text-align: center;
+      top: 10px; 
+      left: 50%;
+   }
+   #navigatetoolbarheader {
+      cursor: move;
+      z-index: 10;
+      background-color: #2196F3;
+      color: #fff;
+   }
+   #navhelper{
+      position: absolute;
+      z-index: 9;
+      background-color: #f1f1f1;
+      border: 1px solid #d3d3d3;
+      text-align: left;
+      top: 0px; 
+      left:80%;
+      padding: 5px;
+   }
+   #navhelperheader {
+      cursor: move;
+      z-index: 10;
+      background-color: #2196F3;
+      color: #fff;
+      padding: 5px;
+   }    
+   </style>
+</head>
+<body ng-app="rxweb">
+    <!--[if lte IE 8]>
+      <p class="browsehappy">You are using an <strong>outdated</strong> browser. Please <a href="http://browsehappy.com/">upgrade your browser</a> to improve your experience.</p>
+    <![endif]-->
+
+    <div id="rxcontainer">
+      <div>
+        <!--used for 3D walktrough-->
+        <div class="wheelPanel" style="visibility: hidden">
+          <img src="images/wheelCake.png" usemap="#wheelMap" width="200" height="200" />
+          <map id="wheelMap" name="wheelMap">
+            <area shape="circle" coords="100 100 50" alt="" id="touchCake" style="color:red" />
+            <area shape="circle" coords="100 100 100" alt="" id="touchWheel" />
+          </map>
+        </div>
+        <!--used for 3D walktrough-->
+      </div>
+    </div>
+
+   <div id="navigatetoolbar">
+     <div id="navigatetoolbarheader">BIM Tools</div>
+     <div class="btn-group" role="group" aria-label="BIM">
+       <!--<button title="Load Building" onclick="loadInstitute()" type="button" class="btn btn-secondary"><span ng-class="item.icon" class="ui-icon-loadmodel"></span></button>-->
+       <button title="Walkthrough Building" onclick="walkthrough()" type="button" class="btn btn-secondary"><span ng-class="item.icon" class="ui-icon-walkthrough-bim"></span></button>
+       <button title="Reset Building to Initial State" onclick="reset3D()" type="button" class="btn btn-secondary"><span ng-class="item.icon" class="ui-icon-reset3d-bim"></span></button>
+      </div>    
+   </div>
+
+   <div id="navhelper">
+      <div id="navhelperheader">Navigation Helper</div>
+      <div>
+      <p>
+      The following commands are available in Walkthrough mode:
+      </p>
+      <img src="bimimages\button-arrow-up@32px.png"> + <b>W</b>: Walk forward<br>
+      <img src="bimimages\button-arrow-down@32px.png"> + <b>S</b>: Walk backward<br>
+      <img src="bimimages\button-arrow-left@32px.png"> + <b>A</b>: Move left<br>
+      <img src="bimimages\button-arrow-right@32px.png"> + <b>D</b>: Move right<br>
+      <p>
+      <b>PageUp</b>: Move up one floor<br>
+      <b>PageDn</b>: Move down one floor<br>
+      </p>
+      <p>
+      Press a mouse button while moving the mouse to change view direction.
+      </p>
+      <p>
+      Press the <img src="bimimages\walk.png" onclick="walkthrough();"> button to enter Walkthrough mode.
+      <p>
+      <p>
+      Press the <img src="bimimages\reset3D.png" onclick="reset3D();"> button to reset the model to initial orbit mode.
+      <p>
+      <a href="https://github.com/Rasterex-Software/RxBIM-SDK-Samples/tree/master/bimnavigate" target="_blank">Source</a>
+      </div>    
+   </div>
+
+   <script>
+   
+   //Make our gui elements draggable:
+   dragElement(document.getElementById(("navigatetoolbar")));
+   dragElement(document.getElementById(("navhelper")));
+
+   function dragElement(elmnt) {
+     var pos1 = 0, pos2 = 0, pos3 = 400, pos4 = 300;
+     if (document.getElementById(elmnt.id + "header")) {
+       /* if present, the header is where you move the DIV from:*/
+       document.getElementById(elmnt.id + "header").onmousedown = dragMouseDown;
+     } else {
+       /* otherwise, move the DIV from anywhere inside the DIV:*/
+       elmnt.onmousedown = dragMouseDown;
+     }
+
+     function dragMouseDown(e) {
+       e = e || window.event;
+       // get the mouse cursor position at startup:
+       pos3 = e.clientX;
+       pos4 = e.clientY;
+       document.onmouseup = closeDragElement;
+       // call a function whenever the cursor moves:
+       document.onmousemove = elementDrag;
+     }
+
+     function elementDrag(e) {
+       e = e || window.event;
+       // calculate the new cursor position:
+       pos1 = pos3 - e.clientX;
+       pos2 = pos4 - e.clientY;
+       pos3 = e.clientX;
+       pos4 = e.clientY;
+       // set the element's new position:
+       elmnt.style.top = (elmnt.offsetTop - pos2) + "px";
+       elmnt.style.left = (elmnt.offsetLeft - pos1) + "px";
+     }
+
+     function closeDragElement() {
+       /* stop moving when mouse button is released:*/
+       document.onmouseup = null;
+       document.onmousemove = null;
+     }
+   }
+   </script>
+   
+   <script  type="text/javascript" src="jquery/jquery-2.1.0.min.js"></script>
+   <script src="assets/js/bootstrap.min.js"></script>
+   <script type="text/javascript" src="three/three.min.js"></script>
+   <script type="text/javascript" src="three/detector.js"></script>
+   <script type="text/javascript" src="three/GLTFLoader.js"></script>
+   <script type="text/javascript" src="pdfjsnew/web/compatibility.js" charset="utf-8"></script>
+   <script src="pdfjsnew/build/pdf.js"></script>
+   <script src="pdfjsnew/build/textlayerbuilder.js"></script>
+   <script src="rxconfig.js"></script>
+   <script src="rxcorefunctions.js"></script>
+    
+   <script type="text/javascript" charset="utf-8">
+   var walktrough = false;
+   var wheelclass =  document.getElementsByClassName("wheelPanel");
+
+   function loadInstitute()
+   {
+      RxCore.openFile("C:\\\\Rasterex\\\\Upload\\\\AC11-Institute-Var-2-IFC.ifc");            
+      RxCore.reset3DModel();
+      RxCore.zoomFit();               
+   }        
+
+   function walkthrough()
+   {
+      walktrough = !walktrough;
+      RxCore.walkThrough3D(walktrough);
+      if (walktrough)
+      {
+         var items = RxCore.search3dAttributes("18PQUIFELEARLM4c0brquf");
+         if (items.length)
+         {
+            RxCore.select3DVectorBlock(items[0].userData.name);
+            RxCore.moveTo3DPart();
+         }
+      }
+      else
+      {
+         RxCore.reset3DModel();
+      }
+   }
+
+   function reset3D()
+   {
+     RxCore.reset3DModel();
+     walktrough = false;
+   }
+
+   $(document).ready(function () 
+   {
+      var canvdim = 
+      {
+         offsetWidth: 0,
+         offsetHeight: 0
+      };
+
+      RxCore.initialize(canvdim);
+      RxCore.GUI_Ready.connect(function(){
+	      RxCore.openFile("C:\\\\Rasterex\\\\Upload\\\\AC11-Institute-Var-2-IFC.ifc");
+      });
+         
+      RxCore.GUI_3DWalkthrough.connect(function(setvisible)
+      {
+         if(!RxCore.GUI_3DWalkthrough.elementSet){
+            RxCore.GUI_3DWalkthrough.setDivElement($('div.wheelPanel')[0].children[1]);
+            RxCore.GUI_3DWalkthrough._wheelImg = $('div.wheelPanel img')[0];
+         }
+      });
+   });
+   </script>
+   </body>
+</html>

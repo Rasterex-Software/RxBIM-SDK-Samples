@@ -1,0 +1,125 @@
+.ui-icon-hide3d {
+  vertical-align: middle;
+  display: inline-block;
+  cursor: pointer;
+  width: 32px;
+  height: 32px;
+  background-image: url(../images/hide.png);
+}
+
+.ui-icon-reset3d {
+  vertical-align: middle;
+  display: inline-block;
+  cursor: pointer;
+  width: 32px;
+  height: 32px;
+  background-image: url(../images/reset3d.png);
+}
+
+.ui-icon-showdoors {
+  vertical-align: middle;
+  display: inline-block;
+  cursor: pointer;
+  width: 32px;
+  height: 32px;
+  background-image: url(../images/buildingdoors.png);
+}
+
+.ui-icon-isolatedoors {
+  vertical-align: middle;
+  display: inline-block;
+  cursor: pointer;
+  width: 32px;
+  height: 32px;
+  background-image: url(../images/buildingdoorsiso.png);
+}
+
+.ui-icon-isolatewindows {
+  vertical-align: middle;
+  display: inline-block;
+  cursor: pointer;
+  width: 32px;
+  height: 32px;
+  background-image: url(../images/buildingwindowsiso.png);
+}
+
+.ui-icon-showwindows {
+  vertical-align: middle;
+  display: inline-block;
+  cursor: pointer;
+  width: 32px;
+  height: 32px;
+  background-image: url(../images/buildingwindows.png);
+}
+
+.ui-icon-showhvac {
+  vertical-align: middle;
+  display: inline-block;
+  cursor: pointer;
+  width: 32px;
+  height: 32px;
+  background-image: url(../images/buildingplumbing.png);
+}
+
+.ui-icon-isolatehvac {
+  vertical-align: middle;
+  display: inline-block;
+  cursor: pointer;
+  width: 32px;
+  height: 32px;
+  background-image: url(../images/plumbing.png);
+}
+
+.ui-icon-togglefurniture {
+  vertical-align: middle;
+  display: inline-block;
+  cursor: pointer;
+  width: 32px;
+  height: 32px;
+  background-image: url(../images/togglefurniture.png);
+}
+
+.ui-icon-showfurniture {
+  vertical-align: middle;
+  display: inline-block;
+  cursor: pointer;
+  width: 32px;
+  height: 32px;
+  background-image: url(../images/buildingfurniture.png);
+}
+
+.ui-icon-isolatefurniture {
+  vertical-align: middle;
+  display: inline-block;
+  cursor: pointer;
+  width: 32px;
+  height: 32px;
+  background-image: url(../images/isolatefurniture.png);
+}
+
+.ui-icon-walkthrough-bim {
+  vertical-align: middle;
+  display: inline-block;
+  cursor: pointer;
+  width: 32px;
+  height: 32px;
+  background-image: url(../bimimages/walk.png);
+}
+
+.ui-icon-loadmodel {
+  vertical-align: middle;
+  display: inline-block;
+  cursor: pointer;
+  width: 32px;
+  height: 32px;
+  background-image: url(../bimimages/building-1@32px.png);
+}
+
+.ui-icon-reset3d-bim {
+  vertical-align: middle;
+  display: inline-block;
+  cursor: pointer;
+  width: 32px;
+  height: 32px;
+  background-image: url(../bimimages/reset3d.png);
+}
