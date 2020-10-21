@@ -4,7 +4,7 @@ var RxConfig = (function() {
     /* server connect */
     var gui360URL = "rxweb/";
 
-var baseURL = "http://TERJEWIN10/";
+var baseURL = "http://localhost/";
     //+ gui360URL;
     //var baseURL = "http://localhost:9000/";
 
