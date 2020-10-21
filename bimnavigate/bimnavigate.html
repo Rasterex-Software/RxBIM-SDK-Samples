@@ -5,9 +5,8 @@
    <title>BIM Navigation Demo</title>
    <meta name="description" content="">
    <meta name="viewport" content="width=device-width">
-   <link rel="stylesheet" href="css/styles.min.css">
-   <link rel="stylesheet" href="css/bimstyles.min.css">
-   <link rel="stylesheet" href="assets/css/bootstrap.min.css">
+   <link href="https://maxcdn.bootstrapcdn.com/bootstrap/3.3.7/css/bootstrap.min.css" rel="stylesheet"/>   
+   <link rel="stylesheet" href="bim/bimstyles.min.css">
    <style>
    #navigatetoolbar {
       position: absolute;
@@ -15,14 +14,16 @@
       background-color: #f1f1f1;
       border: 1px solid #d3d3d3;
       text-align: center;
-      top: 10px; 
-      left: 50%;
+      top: calc(100% - 120px);
+      left: 45%;
+      user-select:none;
    }
    #navigatetoolbarheader {
       cursor: move;
       z-index: 10;
       background-color: #2196F3;
       color: #fff;
+      user-select:none;
    }
    #navhelper{
       position: absolute;
@@ -33,6 +34,7 @@
       top: 0px; 
       left:80%;
       padding: 5px;
+      user-select:none;
    }
    #navhelperheader {
       cursor: move;
@@ -40,10 +42,56 @@
       background-color: #2196F3;
       color: #fff;
       padding: 5px;
+      user-select:none;
    }    
+   .navigate
+   {
+      display: none;
+      position: absolute;
+      z-index: 9;
+      background-color: #f1f1f1;
+      text-align: left;
+      top: calc(100% - 350px);
+      left: calc(100% - 400px);
+      user-select:none;
+   }
+   .navigateheader 
+   {
+      cursor: move;
+      z-index: 10;
+      background-color: #2196F3;
+      color: #fff;
+      padding: 5px;
+      user-select:none;
+   } 
+   .birdseyemain 
+   {
+      position: relative;
+      width: 350px;
+      height: 269px;
+      border: 0px;
+      padding: 0px 0px;
+   }
+   .birdseyemain canvas
+   {
+      position: absolute;
+      top: 0px;
+      left: 0px;
+   }       
    </style>
+   <script src="jquery/jquery-2.1.0.min.js"></script>
+   <script src="assets/js/bootstrap.min.js"></script>
+   <script src="three/three.min.js"></script>
+   <script src="three/detector.js"></script>
+   <script src="three/GLTFLoader.js"></script>
+   <script src="pdfjsnew/web/compatibility.js" charset="utf-8"></script>
+   <script src="pdfjsnew/build/pdf.js"></script>
+   <script src="pdfjsnew/build/textlayerbuilder.js"></script>
+   <script src="bim/bimdemoconfig.js"></script>
+   <script src="bim/dragelement.js"></script>
+   <script src="rxcorefunctions.min.js"></script>
 </head>
-<body ng-app="rxweb">
+<body>
     <!--[if lte IE 8]>
       <p class="browsehappy">You are using an <strong>outdated</strong> browser. Please <a href="http://browsehappy.com/">upgrade your browser</a> to improve your experience.</p>
     <![endif]-->
@@ -51,36 +99,48 @@
     <div id="rxcontainer">
       <div>
         <!--used for 3D walktrough-->
-        <div class="wheelPanel" style="visibility: hidden">
+        <div class="wheelPanel" style="display: none">
           <img src="images/wheelCake.png" usemap="#wheelMap" width="200" height="200" />
           <map id="wheelMap" name="wheelMap">
             <area shape="circle" coords="100 100 50" alt="" id="touchCake" style="color:red" />
             <area shape="circle" coords="100 100 100" alt="" id="touchWheel" />
           </map>
         </div>
-        <!--used for 3D walktrough-->
       </div>
     </div>
 
    <div id="navigatetoolbar">
      <div id="navigatetoolbarheader">BIM Tools</div>
      <div class="btn-group" role="group" aria-label="BIM">
-       <!--<button title="Load Building" onclick="loadInstitute()" type="button" class="btn btn-secondary"><span ng-class="item.icon" class="ui-icon-loadmodel"></span></button>-->
-       <button title="Walkthrough Building" onclick="walkthrough()" type="button" class="btn btn-secondary"><span ng-class="item.icon" class="ui-icon-walkthrough-bim"></span></button>
+       <button id="button_walkthrough" title="Walkthrough Building" onclick="walkthrough3D()" type="button" class="btn btn-secondary"><span ng-class="item.icon" class="ui-icon-walkthrough-bim"></span></button>
+       <button id="button_floorplan" title="Show floorplan in walkthrough mode" onclick="floorplan3D()" type="button" class="btn btn-secondary"><span ng-class="item.icon" class="ui-icon-2dfloor-bim"></span></button>
        <button title="Reset Building to Initial State" onclick="reset3D()" type="button" class="btn btn-secondary"><span ng-class="item.icon" class="ui-icon-reset3d-bim"></span></button>
       </div>    
    </div>
-
+   <!-- Birdseye window - initially hidden -->
+   <div id="navigate_id" class="navigate">
+   <div id="navigateheader_id" class="navigateheader">2D Navigation</div>
+   <div id="birdseyemain_id" class="birdseyemain">
+      <canvas id="birdseyeimage"></canvas>
+      <canvas id="birdseyemarkup"></canvas>
+      <canvas id="birdseyeindicator"></canvas>
+   </div>
+   </div>
    <div id="navhelper">
       <div id="navhelperheader">Navigation Helper</div>
       <div>
       <p>
       The following commands are available in Walkthrough mode:
       </p>
-      <img src="bimimages\button-arrow-up@32px.png"> + <b>W</b>: Walk forward<br>
-      <img src="bimimages\button-arrow-down@32px.png"> + <b>S</b>: Walk backward<br>
-      <img src="bimimages\button-arrow-left@32px.png"> + <b>A</b>: Move left<br>
-      <img src="bimimages\button-arrow-right@32px.png"> + <b>D</b>: Move right<br>
+      <p>
+      <img src="bim/img/up.png"> or <b>W</b>: Walk forward<br>
+      <img src="bim/img/down.png"> or <b>S</b>: Walk backward<br>
+      <img src="bim/img/left.png"> or <b>A</b>: Move left<br>
+      <img src="bim/img/right.png"> or <b>D</b>: Move right<br>
+      </p>
+      <p>
+      Press the shift key together with any of the above commands to move faster.
+      </p>
       <p>
       <b>PageUp</b>: Move up one floor<br>
       <b>PageDn</b>: Move down one floor<br>
@@ -89,108 +149,107 @@
       Press a mouse button while moving the mouse to change view direction.
       </p>
       <p>
-      Press the <img src="bimimages\walk.png" onclick="walkthrough();"> button to enter Walkthrough mode.
+      Press the <img src="bim/img/walk.png" onclick="walkthrough3D();" title="Walkthrough Building"> button to enter Walkthrough mode.
+      </p>
       <p>
+      Press the <img src="bim/img/floor-plan.png" onclick="floorplan3D();" title="Show floorplan in walkthrough mode"> button to toggle 2D navigation floorplan visibility when walkthrough mode is active.
+      </p>
       <p>
-      Press the <img src="bimimages\reset3D.png" onclick="reset3D();"> button to reset the model to initial orbit mode.
+      Press the <img src="bim/img/reset.png" onclick="reset3D();" title="Reset Building to Initial State"> button to reset the model to initial mode.
+      </p>
+      <p align="center">
+      <input type="button" id="doclosehelp" name="doclosehelp" value="Hide" onclick="closeHelp()">
+      </p>
       <p>
-      <a href="https://github.com/Rasterex-Software/RxBIM-SDK-Samples/tree/master/bimnavigate" target="_blank">Source</a>
+      <a href="https://github.com/Rasterex-Software/RxBIM-SDK-Samples/blob/master/bimnavigate/bimnavigate.html" target="_blank">Source Code</a>
+      </p>
       </div>    
    </div>
-
    <script>
+   var walkthrough = false;
+   var floorplaneactive = false;
    
-   //Make our gui elements draggable:
-   dragElement(document.getElementById(("navigatetoolbar")));
-   dragElement(document.getElementById(("navhelper")));
-
-   function dragElement(elmnt) {
-     var pos1 = 0, pos2 = 0, pos3 = 400, pos4 = 300;
-     if (document.getElementById(elmnt.id + "header")) {
-       /* if present, the header is where you move the DIV from:*/
-       document.getElementById(elmnt.id + "header").onmousedown = dragMouseDown;
-     } else {
-       /* otherwise, move the DIV from anywhere inside the DIV:*/
-       elmnt.onmousedown = dragMouseDown;
-     }
-
-     function dragMouseDown(e) {
-       e = e || window.event;
-       // get the mouse cursor position at startup:
-       pos3 = e.clientX;
-       pos4 = e.clientY;
-       document.onmouseup = closeDragElement;
-       // call a function whenever the cursor moves:
-       document.onmousemove = elementDrag;
-     }
-
-     function elementDrag(e) {
-       e = e || window.event;
-       // calculate the new cursor position:
-       pos1 = pos3 - e.clientX;
-       pos2 = pos4 - e.clientY;
-       pos3 = e.clientX;
-       pos4 = e.clientY;
-       // set the element's new position:
-       elmnt.style.top = (elmnt.offsetTop - pos2) + "px";
-       elmnt.style.left = (elmnt.offsetLeft - pos1) + "px";
-     }
-
-     function closeDragElement() {
-       /* stop moving when mouse button is released:*/
-       document.onmouseup = null;
-       document.onmousemove = null;
-     }
-   }
-   </script>
-   
-   <script  type="text/javascript" src="jquery/jquery-2.1.0.min.js"></script>
-   <script src="assets/js/bootstrap.min.js"></script>
-   <script type="text/javascript" src="three/three.min.js"></script>
-   <script type="text/javascript" src="three/detector.js"></script>
-   <script type="text/javascript" src="three/GLTFLoader.js"></script>
-   <script type="text/javascript" src="pdfjsnew/web/compatibility.js" charset="utf-8"></script>
-   <script src="pdfjsnew/build/pdf.js"></script>
-   <script src="pdfjsnew/build/textlayerbuilder.js"></script>
-   <script src="rxconfig.js"></script>
-   <script src="rxcorefunctions.min.js"></script>
-    
-   <script type="text/javascript" charset="utf-8">
-   var walktrough = false;
-   var wheelclass =  document.getElementsByClassName("wheelPanel");
-
-   function loadInstitute()
-   {
-      RxCore.openFile("C:\\\\Rasterex\\\\Upload\\\\AC11-Institute-Var-2-IFC.ifc");            
-      RxCore.reset3DModel();
-      RxCore.zoomFit();               
-   }        
-
-   function walkthrough()
-   {
-      walktrough = !walktrough;
-      RxCore.walkThrough3D(walktrough);
-      if (walktrough)
+   //Show or hide floorplan div based on the current state
+   function floorplan3D_GuiState()
+   {    
+      var ourbutton = document.getElementById("button_floorplan3D");
+      if (floorplaneactive)
       {
-         var items = RxCore.search3dAttributes("18PQUIFELEARLM4c0brquf");
+         $( "#button_floorplan" ).addClass('active');
+         document.getElementById("navigate_id").style.display = "block";
+         var imagecanvas = document.getElementById("birdseyeimage");
+         var indicatorcanvas = document.getElementById("birdseyeindicator");
+         var markupcanvas = document.getElementById("birdseyemarkup");
+         RxCore.setBirdseyeCanvas(imagecanvas, indicatorcanvas, markupcanvas);
+         RxCore.renderBirdseye();
+      }
+      else
+      {
+         if ( $( "#button_floorplan" ).hasClass('active'))
+             $( "#button_floorplan" ).removeClass('active')
+         document.getElementById("navigate_id").style.display = "none";
+      }      
+   }     
+   function floorplan3D()
+   {
+      if (!walkthrough)
+      {
+         //Enable walkthrough and floorplane
+         walkthrough3D();
+      }
+      else
+      {
+         //Just toggle floorplan state
+         floorplaneactive = !floorplaneactive;
+         floorplan3D_GuiState();
+      }
+   }   
+   function walkthrough3D_GuiState()
+   {    
+      if (walkthrough)
+      {
+         $( "#button_walkthrough" ).addClass('active');
+      }
+      else
+      {
+         if ( $( "#button_walkthrough" ).hasClass('active'))
+             $( "#button_walkthrough" ).removeClass('active')
+      }
+   }
+   function walkthrough3D()
+   {
+      walkthrough = !walkthrough;
+      RxCore.walkThrough3D(walkthrough);
+      if (walkthrough)
+      {
+         //For Institute we will start at the main entry door, globalid = "18PQUIFELEARLM4c0brquf"
+         var items = RxCore.search3dAttributes("18PQUIFELEARLM4c0brquf");  
          if (items.length)
          {
             RxCore.select3DVectorBlock(items[0].userData.name);
             RxCore.moveTo3DPart();
          }
+         floorplaneactive = true;
+         floorplan3D_GuiState();
+         walkthrough3D_GuiState();
       }
       else
       {
-         RxCore.reset3DModel();
+         reset3D();
       }
    }
-
    function reset3D()
    {
-     RxCore.reset3DModel();
-     walktrough = false;
+      RxCore.reset3DModel();
+      walkthrough = false;
+      floorplaneactive = false;
+      floorplan3D_GuiState();
+      walkthrough3D_GuiState();
    }
-
+   function closeHelp()
+   {
+      document.getElementById("navhelper").style.display = "none";
+   }
    $(document).ready(function () 
    {
       var canvdim = 
@@ -199,11 +258,17 @@
          offsetHeight: 0
       };
 
+      //Make gui elements dragable:
+      dragElement(document.getElementById(("navigatetoolbar")));
+      dragElement(document.getElementById(("navhelper")));
+      dragElement(document.getElementById(("navigate_id")));
+
+      //Initialize RxBIM 
       RxCore.initialize(canvdim);
       RxCore.GUI_Ready.connect(function(){
 	      RxCore.openFile("C:\\\\Rasterex\\\\Upload\\\\AC11-Institute-Var-2-IFC.ifc");
       });
-         
+      //Handle walkthrough event - this event is called when walkthrough is activated 
       RxCore.GUI_3DWalkthrough.connect(function(setvisible)
       {
          if(!RxCore.GUI_3DWalkthrough.elementSet){
@@ -211,6 +276,32 @@
             RxCore.GUI_3DWalkthrough._wheelImg = $('div.wheelPanel img')[0];
          }
       });
+      //Handle birdseye event - this event is called when a birdseye needs an update
+      RxCore.GUI_birdseye.connect( function(index, birdseye)
+      {      
+         if(birdseye.birdseyeGUIimgctx != null)
+         {
+            var width = birdseye.birdseyeobj.birdseye.width;
+            var height = birdseye.birdseyeobj.birdseye.height;
+            var imagecanvas = document.getElementById("birdseyeimage");
+            var indicatorcanvas = document.getElementById("birdseyeindicator");
+            var markupcanvas = document.getElementById("birdseyemarkup");
+            //Rescale canvas
+            imagecanvas.width = width;
+            imagecanvas.height = height;
+            indicatorcanvas.width = width;
+            indicatorcanvas.height = height;
+            markupcanvas.width = width;
+            markupcanvas.height = height;
+            //Rescale divs
+            var birdseyewindow = document.getElementById("navigate_id");
+            birdseyewindow.style.width = width + "px";
+            var birdseyemain = document.getElementById("birdseyemain_id");
+            birdseyemain.style.width = width + "px";
+            //Finally draw the birdseye image to the canvas
+            birdseye.birdseyeGUIimgctx.drawImage(birdseye.birdseyeobj.birdseye, 0,0);
+         }        
+      });         
    });
    </script>
    </body>
