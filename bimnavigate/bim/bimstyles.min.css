@@ -1,0 +1,292 @@
+body {
+  padding: 0;
+  margin: 0;
+  font: 100% Helvetica, sans-serif;
+  color: #777;
+  font-size: 15px;
+  overflow: hidden;
+}
+
+#rxcontainer {
+  position: relative;
+  width: 100%;
+  height: 100%;
+  display: block;
+  margin: 0;
+  padding: 0;
+  border: 0;
+  float: left;
+}
+
+#rxcanvas {
+  /*width: 100%;
+  height: 100%;
+  border: 1px solid #000;*/
+  -webkit-font-smoothing: subpixel-antialiased;
+  display: block;
+}
+
+#imageDisp {
+  position: absolute;
+  -webkit-font-smoothing: subpixel-antialiased;
+  top: 0px;
+  left: 0px;
+}
+
+#imageTemp {
+  position: absolute;
+  -webkit-font-smoothing: subpixel-antialiased;
+  top: 0px;
+  left: 0px;
+}
+
+#canv3D {
+  position: absolute;
+  top: 0px;
+  left: 0px;
+  background: -webkit-linear-gradient(#FFFFFF, #b5b5b5);
+  /* For Safari 5.1 to 6.0 */
+  /* For Opera 11.1 to 12.0 */
+  /* For Firefox 3.6 to 15 */
+  background: linear-gradient(#FFFFFF, #b5b5b5);
+  /* Standard syntax */
+}
+
+#imagemag {
+  position: absolute;
+  -webkit-font-smoothing: subpixel-antialiased;
+  top: 0px;
+  left: 0px;
+}
+
+.btn {
+  padding: 8px 8px;
+  margin-left: 10px;
+}
+
+.btn:focus, .btn:active {
+  outline: none !important;
+}
+
+.btn-default.focus, .btn-default:focus {
+  background-color: white;
+}
+
+.ui-icon-hide3d {
+  vertical-align: middle;
+  display: inline-block;
+  cursor: pointer;
+  width: 32px;
+  height: 32px;
+  background-image: url(img/hide.png);
+}
+
+.ui-icon-showdoors {
+  vertical-align: middle;
+  display: inline-block;
+  cursor: pointer;
+  width: 32px;
+  height: 32px;
+  background-image: url(img/buildingdoors.png);
+}
+
+.ui-icon-isolatedoors {
+  vertical-align: middle;
+  display: inline-block;
+  cursor: pointer;
+  width: 32px;
+  height: 32px;
+  background-image: url(img/buildingdoorsiso.png);
+}
+
+.ui-icon-isolatewindows {
+  vertical-align: middle;
+  display: inline-block;
+  cursor: pointer;
+  width: 32px;
+  height: 32px;
+  background-image: url(img/buildingwindowsiso.png);
+}
+
+.ui-icon-showwindows {
+  vertical-align: middle;
+  display: inline-block;
+  cursor: pointer;
+  width: 32px;
+  height: 32px;
+  background-image: url(img/buildingwindows.png);
+}
+
+.ui-icon-showhvac {
+  vertical-align: middle;
+  display: inline-block;
+  cursor: pointer;
+  width: 32px;
+  height: 32px;
+  background-image: url(img/buildingplumbing.png);
+}
+
+.ui-icon-isolatehvac {
+  vertical-align: middle;
+  display: inline-block;
+  cursor: pointer;
+  width: 32px;
+  height: 32px;
+  background-image: url(img/plumbing.png);
+}
+
+.ui-icon-togglefurniture {
+  vertical-align: middle;
+  display: inline-block;
+  cursor: pointer;
+  width: 32px;
+  height: 32px;
+  background-image: url(img/togglefurniture.png);
+}
+
+.ui-icon-showfurniture {
+  vertical-align: middle;
+  display: inline-block;
+  cursor: pointer;
+  width: 32px;
+  height: 32px;
+  background-image: url(img/buildingfurniture.png);
+}
+
+.ui-icon-isolatefurniture {
+  vertical-align: middle;
+  display: inline-block;
+  cursor: pointer;
+  width: 32px;
+  height: 32px;
+  background-image: url(img/isolatefurniture.png);
+}
+
+.ui-icon-walkthrough-bim {
+  vertical-align: middle;
+  display: inline-block;
+  cursor: pointer;
+  width: 32px;
+  height: 32px;
+  background-image: url(img/walk.png);
+}
+
+.ui-icon-loadmodel {
+  vertical-align: middle;
+  display: inline-block;
+  cursor: pointer;
+  width: 32px;
+  height: 32px;
+  background-image: url(img/building-1@32px.png);
+}
+
+.ui-icon-reset3d-bim {
+  vertical-align: middle;
+  display: inline-block;
+  cursor: pointer;
+  width: 32px;
+  height: 32px;
+  background-image: url(img/reset.png);
+}
+
+.ui-icon-select-bim {
+  vertical-align: middle;
+  display: inline-block;
+  cursor: pointer;
+  width: 32px;
+  height: 32px;
+  background-image: url(img/select.png);
+}
+
+.ui-icon-2dfloor-bim {
+  vertical-align: middle;
+  display: inline-block;
+  cursor: pointer;
+  width: 32px;
+  height: 32px;
+  background-image: url(img/floor-plan.png);
+}  
+
+.ui-icon-zoomall-cad {
+  vertical-align: middle;
+  display: inline-block;
+  cursor: pointer;
+  width: 32px;
+  height: 32px;
+  background-image: url(img/zoomall.png);
+}
+
+.ui-icon-zoomwindow-cad {
+  vertical-align: middle;
+  display: inline-block;
+  cursor: pointer;
+  width: 32px;
+  height: 32px;
+  background-image: url(img/zoomwindow.png);
+}
+
+.icon-spin-cross-platform {
+  font-size: 3.5em;
+  display: inline-block;
+  -moz-animation: spin 2s infinite linear;
+  -o-animation: spin 2s infinite linear;
+  -webkit-animation: spin 2s infinite linear;
+  animation: spin2 2s infinite linear;
+}
+
+@keyframes spin2{
+    0%{transform:rotate(0deg)}
+    100%{transform:rotate(359deg)}
+}
+@-moz-keyframes spin2{
+    0%{-moz-transform:rotate(0deg)}
+    100%{-moz-transform:rotate(359deg)}
+}
+@-webkit-keyframes spin2{
+    0%{-webkit-transform:rotate(0deg)}
+    100%{-webkit-transform:rotate(359deg)}
+}
+@-o-keyframes spin2{
+    0%{-o-transform:rotate(0deg)}
+    100%{-o-transform:rotate(359deg)}
+}
+@-ms-keyframes spin2{
+    0%{-ms-transform:rotate(0deg)}
+    100%{-ms-transform:rotate(359deg)}
+}
+
+.slidecontainer 
+{
+   width: 100%;
+}
+
+.slider {
+  -webkit-appearance: none;
+  width: 100%;
+  height: 25px;
+  background: #d3d3d3;
+  outline: none;
+  opacity: 0.7;
+  -webkit-transition: .2s;
+  transition: opacity .2s;
+}
+
+.slider:hover {
+  opacity: 1;
+}
+
+.slider::-webkit-slider-thumb {
+  -webkit-appearance: none;
+  appearance: none;
+  width: 25px;
+  height: 25px;
+  background: #4CAF50;
+  cursor: pointer;
+}
+
+.slider::-moz-range-thumb {
+  width: 25px;
+  height: 25px;
+  background: #4CAF50;
+  cursor: pointer;
+}   
