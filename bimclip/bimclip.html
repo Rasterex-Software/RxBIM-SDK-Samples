@@ -1,0 +1,351 @@
+<!doctype html>
+<html>
+<head>
+   <meta charset="utf-8">
+   <title>RxBIM 3D Clipping Sample</title>
+   <meta name="description" content="">
+   <meta name="viewport" content="width=device-width">
+   <link rel="stylesheet" href="https://maxcdn.bootstrapcdn.com/bootstrap/3.3.7/css/bootstrap.min.css" integrity="sha384-BVYiiSIFeK1dGmJRAkycuHAHRg32OmUcww7on3RYdg4Va+PmSTsz/K68vbdEjh4u" crossorigin="anonymous">
+   <link rel="stylesheet" href="bim/bimstyles.min.css">
+   <style>
+   #loadprogress{
+      position: absolute;
+      z-index: 9;
+      background-color: #f1f1f1;
+      border: 1px solid #d3d3d3;
+      text-align: center;
+      top: 40%;
+      left: 45%;
+      padding: 8px 8px;
+      user-select:none;
+      display: none;
+   }         
+   #navigatetoolbar 
+   {
+      position: absolute;
+      z-index: 9;
+      background-color: #f1f1f1;
+      border: 1px solid #d3d3d3;
+      text-align: center;
+      top: calc(100% - 120px); ; 
+      left: 45%;
+   }
+   #navigatetoolbarheader 
+   {
+      cursor: move;
+      z-index: 10;
+      background-color: #2196F3;
+      color: #fff;
+   }    
+    #filelist{
+      position: absolute;
+      z-index: 9;
+      background-color: #f1f1f1;
+      border: 1px solid #d3d3d3;
+      text-align: left;
+      top: 10px; 
+      left: 10px;
+      padding: 5px;
+      width: 200px;
+      user-select:none;
+    }
+    #filelistheader {
+      padding: 5px;
+      cursor: move;
+      z-index: 10;
+      background-color: #2196F3;
+      color: #fff;
+    }     
+   #clippertoolbarheader {
+      padding: 5px;
+      cursor: move;
+      z-index: 4;
+      background-color: #2196F3;
+      color: #fff;
+      text-align: left;
+    }    
+    #clippertoolbar {
+      padding: 5px;
+      position: absolute;
+      z-index: 5;
+      background-color: #f1f1f1;
+      border: 1px solid #d3d3d3;
+      text-align: center;
+      top: 200px; 
+      left: 10px;
+      width: 200px;
+      user-select:none;
+   }
+   #bimquery{
+      position: absolute;
+      z-index: 3;
+      background-color: #f1f1f1;
+      border: 1px solid #d3d3d3;
+      text-align: left;
+      top: 10px; 
+      left: calc(100% - 320px);
+      max-height: 500px;
+      padding: 5px;
+      overflow-y:scroll;
+   }
+   #bimqueryheader{
+      cursor: move;
+      z-index: 4;
+      background-color: #2196F3;
+      color: #fff;
+      padding: 5px;
+   }        
+   </style>
+</head>
+<body>
+   <script src="https://ajax.googleapis.com/ajax/libs/jquery/3.5.1/jquery.min.js"></script>   
+   <script src="https://maxcdn.bootstrapcdn.com/bootstrap/3.3.7/js/bootstrap.min.js" integrity="sha384-Tc5IQib027qvyjSMfHjOMaLkfuWVxZxUPnCJA7l2mCWNIpG9mGCD8wGNIcPD7Txa" crossorigin="anonymous"></script>
+   <script src="three/three.min.js"></script>
+   <script src="three/detector.js"></script>
+   <script src="three/GLTFLoader.js"></script>
+   <script src="pdfjsnew/web/compatibility.js" charset="utf-8"></script>
+   <script src="pdfjsnew/build/pdf.js"></script>
+   <script src="pdfjsnew/build/textlayerbuilder.js"></script>
+   <script src="bim/bimdemoconfig.js"></script>
+   <script src="rxcorefunctions.min.js"></script>
+   <script src="bim/dragelement.js"></script>
+   <script src="bim/utilities.js"></script>
+   <div id="rxcontainer">
+      <div id="loadprogress">
+      <div>
+      <p>Loading</p>
+      <span class="glyphicon glyphicon-repeat icon-spin-cross-platform"></span>
+      <br>
+      </div>
+      </div> 
+   </div>
+
+   <div id="navigatetoolbar">
+     <div id="navigatetoolbarheader">View Tools</div>
+     <div class="btn-group" role="group" aria-label="BIM">
+       <button id="button_select" title="Select Part" onclick="select3D()" type="button" class="btn btn-secondary"><span ng-class="item.icon" class="ui-icon-select-bim"></span></button>
+       <button id="button_walkthrough" title="Walkthrough Building" onclick="walkthrough3D()" type="button" class="btn btn-secondary"><span ng-class="item.icon" class="ui-icon-walkthrough-bim"></span></button>
+       <button title="Reset Building to Initial State" onclick="reset3D()" type="button" class="btn btn-secondary"><span ng-class="item.icon" class="ui-icon-reset3d-bim"></span></button>
+     </div>
+   </div>
+
+   <div id="filelist">
+      <div id="filelistheader">Files</div>
+      <div class="btn-group" role="group" aria-label="BIM">
+      <a href="javascript:loadArboleda();">Arboleda</a><br>
+      <a href="javascript:loadConferencecenter();">Conference Center</a><br>
+      <a href="javascript:loadBarnehage();">Hasselhaugen Barnehage</a><br>
+      <a href="javascript:loadInstitute();">Institute</a><br>
+      <a href="javascript:loadMunkerud();">Munkerud BS</a><br>
+      <a href="javascript:loadSchependomlaan();">Schependomlaan</a><br>
+     </div>
+   </div>
+
+   <div id="clippertoolbar">
+   <div id="clippertoolbarheader">3D Clipping</div>
+   <br>
+   <div class="slidecontainer">
+   <label for="xaxis">X:</label>
+   <input type="range" min="0" max="100" value="0" id="xaxis" />
+   </div>
+   <p>
+   <div class="slidecontainer">
+   <label for="yaxis">Y:</label>
+   <input type="range" min="0" max="100" value="0" id="yaxis" /><p>
+   </div>
+   <div class="slidecontainer">
+   <label for="zaxis">Z:</label>
+   <input type="range" min="0" max="100" value="0" id="zaxis" /><p>
+   </div>
+   </div>
+   
+   <div id="bimquery">
+     <div id="bimqueryheader">Properties</div>
+     <div id="queryresult">
+      <p>Select a part to show it's properties here.</p>
+     </div>
+   </div>   
+   
+   <script>
+   var selectmode = false;
+   var walkthrough = false;
+  
+   //Load file functions
+   function loadFile( drawing )
+   {
+      RxCore.closeAll();
+      document.getElementById("loadprogress").style.display = "block";
+      RxCore.openFile( "C:\\\\Rasterex\\\\Upload\\\\" + drawing);            
+      reset3D();
+   }      
+   function loadArboleda()
+   {
+      loadFile("Arboleda_Bldg-Arch.ifc"); 
+   }    
+   function loadInstitute()
+   {
+      loadFile("AC11-Institute-Var-2-IFC.ifc");
+   }        
+   
+   function loadConferencecenter()
+   {
+      loadFile( "20160124OTC-Conference Center.ifc" );            
+    }             
+   function loadMunkerud()
+   {
+      loadFile( "Munkerud_Arch_and_BS_2x2.Ifc" );            
+    }             
+   function loadSchependomlaan()
+   {
+      loadFile( "IFC Schependomlaan.ifc" );            
+   }             
+   function loadBarnehage()
+   {
+      loadFile( "IFC 2520 Hasselhaugen barnehage foreløpig.ifc" );            
+   }              
+   //User Interface Functions 
+   function updateGuiState()
+   {    
+      if (walkthrough)
+      {
+         $( "#button_walkthrough" ).addClass('active');
+      }
+      else
+      {
+         if ( $( "#button_walkthrough" ).hasClass('active'))
+             $( "#button_walkthrough" ).removeClass('active')
+      }
+      if (selectmode)
+      {
+         $( "#button_select" ).addClass('active');
+      }
+      else
+      {
+         if ( $( "#button_select" ).hasClass('active'))
+             $( "#button_select" ).removeClass('active')
+      }
+   }   
+   function select3D()
+   {
+      selectmode = !selectmode;
+      RxCore.select3D( selectmode );
+      updateGuiState();
+   }
+   function walkthrough3D()
+   {
+      walkthrough = !walkthrough;
+      RxCore.walkThrough3D( walkthrough );
+      updateGuiState();
+   }
+
+   function reset3D()
+   {
+      RxCore.reset3DModel();
+      transparency_value = 0.05;
+      selectmode = false;
+      walkthrough = false;
+      updateGuiState();
+      document.getElementById("xaxis").value = 0;
+      document.getElementById("yaxis").value = 0;
+      document.getElementById("zaxis").value = 0;
+   } 
+   $(document).ready(function () 
+   {
+      var canvdim = 
+      {
+         offsetWidth: 0, offsetHeight: 0
+      };
+
+
+      //Make our gui elements dragable:
+      dragElement(document.getElementById(("filelist")));
+      dragElement(document.getElementById(("navigatetoolbar")));
+      dragElement(document.getElementById(("clippertoolbar")));
+      dragElement(document.getElementById(("bimquery")));
+
+      RxCore.initialize(canvdim);
+      RxCore.GUI_Ready.connect(function()
+      {
+   		var drawing = getQueryStringParameterByName('drawingId');
+         if (drawing != null)
+         {
+            //Sample usage: ?drawingId="http://download.rasterex.com/AC11-FZK-Haus-IFC.ifc";
+		      RxCore.openFile(drawing);
+         }
+         else
+         {
+   	      RxCore.openFile("C:\\\\Rasterex\\\\Upload\\\\AC11-Institute-Var-2-IFC.ifc");
+         }
+      });
+            
+      RxCore.GUI_3DWalkthrough.connect(function(setvisible)
+      {
+         //Called whenever walkthrough state is toggled
+         if(!RxCore.GUI_3DWalkthrough.elementSet)
+         {
+            RxCore.GUI_3DWalkthrough.setDivElement($('div.wheelPanel')[0].children[1]);
+            RxCore.GUI_3DWalkthrough._wheelImg = $('div.wheelPanel img')[0];
+         }
+      });
+
+      RxCore.GUI_FileLoadComplete.connect(function(fileURL)
+      {
+         //Called when a file has been completely loaded
+         document.getElementById("loadprogress").style.display = "none";
+      });
+      
+      RxCore.GUI_3DPartInfo.connect(function on3DInfoCallback(info) 
+      {
+         //Called when a 3d part has been selected
+         var container = document.getElementById('queryresult');
+         //Clear any current information
+         container.querySelectorAll('*').forEach(n => n.remove());
+         //Show key/value information as a dynamical table
+         var table = document.createElement('TABLE');
+         table.border='1';
+
+         var tableBody = document.createElement('TBODY');
+         table.appendChild(tableBody);         
+         for (const [key, value] of Object.entries(info)) 
+         {
+            var tr = document.createElement('TR');
+            tableBody.appendChild(tr);
+         
+            var tdkey = document.createElement('TD');
+            tdkey.style.padding = "4px 4px";
+            tdkey.width='75';
+            tdkey.appendChild(document.createTextNode(key));
+            tr.appendChild(tdkey);         
+         
+            var tdvalue = document.createElement('TD');
+            tdvalue.width='75';
+            tdvalue.style.padding = "4px 4px";
+            tdvalue.appendChild(document.createTextNode(value));
+            tr.appendChild(tdvalue);         
+         }         
+         container.appendChild(table);                       
+      });    
+      
+      var xslider = document.getElementById("xaxis");
+      xslider.oninput = function() 
+      {
+         var xclip = 100-this.value;
+         RxCore.clipping3D (true,0,xclip)
+      }                    
+      var yslider = document.getElementById("yaxis");
+      yslider.oninput = function() 
+      {
+         var yclip = 100-this.value;
+         RxCore.clipping3D (true,1,yclip)
+      }                    
+      var zslider = document.getElementById("zaxis");
+      zslider.oninput = function() 
+      {
+         var zclip = 100-this.value;
+         RxCore.clipping3D (true,2,zclip)
+      }                    
+            
+   });
+   </script>
+</body>
+</html>
